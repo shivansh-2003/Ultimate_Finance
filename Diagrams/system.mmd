@@ -1,0 +1,171 @@
+flowchart TD
+    %% External Entities
+    User((User))
+    FinData[(External\nFinancial Data)]
+    RegUpdates[(Regulatory\nUpdates)]
+    
+    %% Data Stores
+    DB_User[(User Profile\nDatabase)]
+    DB_Conv[(Conversation\nHistory DB)]
+    DB_Fin[(Financial Data\nDatabase)]
+    DB_Vector[(Vector\nDatabase)]
+    DB_LongTerm[(Long-Term\nFinancial History)]
+    KB_Regulatory[(Regulatory\nKnowledge Base)]
+    
+    %% Top Level Processes
+    UI{{"1.0\nUser Interface"}}
+    Auth{{"2.0\nAuthentication"}}
+    Session{{"3.0\nSession Management"}}
+    QueryAnalysis{{"4.0\nQuery Analysis"}}
+    AgentOrchestration{{"5.0\nAgent Orchestration"}}
+    ResponseGeneration{{"6.0\nResponse Generation"}}
+    DataIntegration{{"7.0\nData Integration"}}
+    
+    %% New Components
+    LongTermMemory{{"8.0\nLong-Term\nMemory Manager"}}
+    RegKnowledgeUpdater{{"9.0\nRegulatory\nKnowledge Updater"}}
+    
+    %% Sub-processes - UI
+    UI_Web{{"1.1\nWeb Interface"}}
+    UI_Mobile{{"1.2\nMobile Interface"}}
+    UI_DocUpload{{"1.3\nDocument Upload"}}
+    
+    %% Sub-processes - Query Analysis
+    QA_Intent{{"4.1\nIntent Detection"}}
+    QA_Context{{"4.2\nContext Recognition"}}
+    QA_UserProfile{{"4.3\nProfile Analysis"}}
+    QA_RegCheck{{"4.4\nRegulatory\nCompliance Check"}}
+    
+    %% Sub-processes - Agent Orchestration
+    AO_Router{{"5.1\nAgent Router"}}
+    AO_Context{{"5.2\nContext Manager"}}
+    AO_State{{"5.3\nState Tracker"}}
+    
+    %% Specialized Agents
+    Agent_Budget{{"5.4.1\nBudget\nAnalysis Agent"}}
+    Agent_Invest{{"5.4.2\nInvestment\nAdvisory Agent"}}
+    Agent_Plan{{"5.4.3\nFinancial\nPlanning Agent"}}
+    Agent_Debt{{"5.4.4\nDebt\nManagement Agent"}}
+    Agent_Tax{{"5.4.5\nTax\nPlanning Agent"}}
+    Agent_Ins{{"5.4.6\nInsurance\nAnalysis Agent"}}
+    
+    %% Long-Term Memory Sub-processes
+    LTM_Financials{{"8.1\nFinancial\nHistory Tracker"}}
+    LTM_Insights{{"8.2\nLongitudinal\nInsight Generator"}}
+    LTM_Retrieval{{"8.3\nRelevant Memory\nRetriever"}}
+    
+    %% Regulatory Knowledge Sub-processes
+    RKU_Scanner{{"9.1\nRegulatory\nUpdate Scanner"}}
+    RKU_Validator{{"9.2\nInformation\nValidator"}}
+    RKU_Integrator{{"9.3\nKnowledge Base\nIntegrator"}}
+    RKU_CountryFilter{{"9.4\nCountry-Specific\nFilter"}}
+    
+    %% Tools
+    Tool_Calc{{"7.1\nFinancial\nCalculators"}}
+    Tool_Analysis{{"7.2\nData Analysis\nTools"}}
+    Tool_PDF{{"7.3\nDocument\nParser"}}
+    
+    %% LLM Integration
+    LLM{{"6.1\nLLM Provider\nIntegration"}}
+    LLM_Anthropic{{"6.1.1\nAnthropic\nAdapter"}}
+    LLM_OpenAI{{"6.1.2\nOpenAI\nAdapter"}}
+    LLM_Perplexity{{"6.1.3\nPerplexity\nAdapter"}}
+    LLM_Gemini{{"6.1.4\nGemini\nAdapter"}}
+    
+    %% Connections - User Flow
+    User -->|"Queries &\nDocuments"| UI
+    UI -->|"Response &\nRecommendations"| User
+    
+    %% UI Layer
+    UI --> UI_Web & UI_Mobile & UI_DocUpload
+    UI_Web & UI_Mobile -->|"User Query"| Auth
+    UI_DocUpload -->|"Financial Documents"| DataIntegration
+    
+    %% Authentication & Session
+    Auth -->|"Auth Token"| Session
+    Session -->|"Session Context"| QueryAnalysis
+    
+    %% Query Analysis
+    QueryAnalysis --> QA_Intent & QA_Context & QA_UserProfile & QA_RegCheck
+    QA_Intent -->|"Identified Intent"| AgentOrchestration
+    QA_Context -->|"Contextual Data"| AgentOrchestration
+    QA_UserProfile -->|"User Profile Data"| AgentOrchestration
+    QA_RegCheck -->|"Compliance Requirements"| AgentOrchestration
+    QA_UserProfile <-->|"Profile Lookup"| DB_User
+    QA_RegCheck <-->|"Regulation Lookup"| KB_Regulatory
+    
+    %% Agent Orchestration
+    AgentOrchestration --> AO_Router & AO_Context & AO_State
+    AO_Router -->|"Route Based on Intent"| AO_Agents
+    
+    %% Group specialized agents
+    subgraph AO_Agents["Specialized Agents"]
+        Agent_Budget
+        Agent_Invest
+        Agent_Plan
+        Agent_Debt
+        Agent_Tax
+        Agent_Ins
+    end
+    
+    %% Connect agents to tools
+    Agent_Budget & Agent_Invest & Agent_Plan & Agent_Debt & Agent_Tax & Agent_Ins <-->|"Use Tools"| DataIntegration
+    Agent_Budget & Agent_Invest & Agent_Plan & Agent_Debt & Agent_Tax & Agent_Ins <-->|"Retrieve Long-Term Insights"| LongTermMemory
+    Agent_Tax & Agent_Invest <-->|"Check Regulatory Requirements"| KB_Regulatory
+    AO_Context <-->|"Store/Retrieve\nConversation Context"| DB_Conv
+    AO_State -->|"Current State"| ResponseGeneration
+    
+    %% Long-Term Memory System
+    DataIntegration -->|"Processed Financial Data"| LongTermMemory
+    DB_Conv -->|"Historical Conversations"| LongTermMemory
+    LongTermMemory --> LTM_Financials & LTM_Insights & LTM_Retrieval
+    LTM_Financials <-->|"Store/Update\nFinancial History"| DB_LongTerm
+    LTM_Insights <-->|"Generate/Retrieve\nLongitudinal Insights"| DB_LongTerm
+    LTM_Retrieval -->|"Relevant Historical Context"| AgentOrchestration
+    
+    %% Regulatory Knowledge System
+    RegUpdates -->|"New Regulations\nTax Laws\nFinancial Rules"| RegKnowledgeUpdater
+    RegKnowledgeUpdater --> RKU_Scanner & RKU_Validator & RKU_Integrator & RKU_CountryFilter
+    RKU_Scanner -->|"Detected Updates"| RKU_Validator
+    RKU_Validator -->|"Validated Information"| RKU_Integrator
+    RKU_Integrator <-->|"Update Knowledge Base"| KB_Regulatory
+    RKU_CountryFilter -->|"Country-Specific Rules\n(e.g., India)"| KB_Regulatory
+    
+    %% Data Integration
+    DataIntegration --> Tool_Calc & Tool_Analysis & Tool_PDF
+    Tool_PDF -->|"Extracted Data"| DB_Fin
+    Tool_Analysis <-->|"Retrieved Data"| DB_Fin
+    Tool_Analysis <-->|"Market Data"| FinData
+    DB_Fin <-->|"Vector Embeddings"| DB_Vector
+    
+    %% Response Generation
+    ResponseGeneration <-->|"LLM Request"| LLM
+    LLM --> LLM_Anthropic & LLM_OpenAI & LLM_Perplexity & LLM_Gemini
+    LLM -->|"Generated Response"| ResponseGeneration
+    ResponseGeneration -->|"Formatted Response"| UI
+    ResponseGeneration -->|"Store User Interaction"| LongTermMemory
+    
+    %% Additional connections
+    AgentOrchestration <-->|"Retrieval\nAugmentation"| DB_Vector
+    AO_Agents <-->|"LLM for\nAgent Reasoning"| LLM
+    
+    %% Styling
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px
+    classDef database fill:#f5e8c8,stroke:#666
+    classDef process fill:#b9e2fe,stroke:#333
+    classDef subProcess fill:#d4f1f9,stroke:#333
+    classDef tool fill:#e2f0cb,stroke:#333
+    classDef agent fill:#fed9a6,stroke:#333
+    classDef llm fill:#d3cce3,stroke:#333
+    classDef newComponent fill:#c8e6c9,stroke:#333
+    classDef regulatory fill:#ffccbc,stroke:#333
+    
+    class User,FinData,RegUpdates external
+    class DB_User,DB_Conv,DB_Fin,DB_Vector,DB_LongTerm,KB_Regulatory database
+    class UI,Auth,Session,QueryAnalysis,AgentOrchestration,ResponseGeneration,DataIntegration process
+    class UI_Web,UI_Mobile,UI_DocUpload,QA_Intent,QA_Context,QA_UserProfile,AO_Router,AO_Context,AO_State subProcess
+    class Tool_Calc,Tool_Analysis,Tool_PDF tool
+    class Agent_Budget,Agent_Invest,Agent_Plan,Agent_Debt,Agent_Tax,Agent_Ins agent
+    class LLM,LLM_Anthropic,LLM_OpenAI,LLM_Perplexity,LLM_Gemini llm
+    class LongTermMemory,LTM_Financials,LTM_Insights,LTM_Retrieval newComponent
+    class RegKnowledgeUpdater,RKU_Scanner,RKU_Validator,RKU_Integrator,RKU_CountryFilter,QA_RegCheck regulatory
