@@ -3,13 +3,26 @@ from pathlib import Path
 from textwrap import dedent
 from agno.agent import Agent
 from agno.models.anthropic import Claude
-from agno.tools.exa import ExaTools
+from agno.tools.calculator import CalculatorTools
+from agno.tools.reasoning import ReasoningTools
 
 today = datetime.now().strftime("%Y-%m-%d")
 
 agent = Agent(
     model=Claude(id="claude-3-5-sonnet-20240620"),
-    tools=[ExaTools(start_published_date=today, type="keyword")],
+    
+    tools=[
+        ReasoningTools(add_instructions=True),
+        CalculatorTools(
+            add=True,
+            subtract=True,
+            multiply=True,
+            divide=True,
+            exponentiate=True,
+            factorial=True,
+            is_prime=True,
+            square_root=True,
+        )],
     description=dedent("""\
         You are the Financial Planning Agent, a specialized AI that focuses exclusively on 
         developing comprehensive, long-term financial plans aligned with life goals and changing 
